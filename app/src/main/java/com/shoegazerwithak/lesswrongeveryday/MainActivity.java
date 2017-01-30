@@ -23,7 +23,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -36,19 +38,19 @@ public class MainActivity extends AppCompatActivity {
     RelativeLayout relativeLayout;
     RecyclerView.Adapter recyclerViewAdapter;
     RecyclerView.LayoutManager recylerViewLayoutManager;
-    String[] subjects =
-            {
-                    "ANDROID",
-                    "PHP",
-                    "BLOGGER",
-                    "WORDPRESS",
-                    "JOOMLA",
-                    "ASP.NET",
-                    "JAVA",
-                    "C++",
-                    "MATHS",
-                    "HINDI",
-                    "ENGLISH"};
+//    String[] subjects =
+//            {
+//                    "ANDROID",
+//                    "PHP",
+//                    "BLOGGER",
+//                    "WORDPRESS",
+//                    "JOOMLA",
+//                    "ASP.NET",
+//                    "JAVA",
+//                    "C++",
+//                    "MATHS",
+//                    "HINDI",
+//                    "ENGLISH"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,15 +89,17 @@ public class MainActivity extends AppCompatActivity {
                 super.onPostExecute(result);
                 Document doc = Jsoup.parse(result, "https://lesswrong.ru");
                 Elements list = doc.select(".leaf:not(.menu-depth-1)");
-                List<String> links = new ArrayList<>();
+                List<Map<String, String>> links = new ArrayList<>();
                 for (Element el : list) {
                     String link = el.child(0).attr("abs:href");
-                    links.add(link);
+                    Map<String, String> mMap = new HashMap<>();
+                    mMap.put("text", el.text());
+                    mMap.put("link", link);
+                    links.add(mMap);
                 }
                 Log.e("ANSWER", "" + links);
                 recyclerViewAdapter = new RecyclerViewAdapter(context, links);
                 recyclerView.setAdapter(recyclerViewAdapter);
-
             }
         }.execute();
 
