@@ -1,40 +1,34 @@
 package com.shoegazerwithak.lesswrongeveryday.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.shoegazerwithak.lesswrongeveryday.ArticleViewActivity;
 import com.shoegazerwithak.lesswrongeveryday.R;
 
 import java.util.List;
 import java.util.Map;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
-    List<Map<String, String>> SubjectValues;
-    Context context;
-    View view1;
-    ViewHolder viewHolder1;
-    TextView textView;
-
-//    private AdapterView.OnItemClickListener onItemClickListener;
+    private List<Map<String, String>> SubjectValues;
+    private Context context;
 
     public RecyclerViewAdapter(Context context1, List<Map<String, String>> SubjectValues1) {
         SubjectValues = SubjectValues1;
         context = context1;
-//        this.onItemClickListener = onItemClickListener;
     }
 
     @Override
     public RecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        view1 = LayoutInflater.from(context).inflate(R.layout.recyclerview_items, parent, false);
-        viewHolder1 = new ViewHolder(view1);
-        return viewHolder1;
+        View view1 = LayoutInflater.from(context).inflate(R.layout.recyclerview_items, parent, false);
+        return new ViewHolder(view1);
     }
 
     @Override
@@ -48,34 +42,26 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return SubjectValues.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-//    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener  {
-        public TextView textView;
+    class ViewHolder extends RecyclerView.ViewHolder {
+        TextView textView;
+        private Context context;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
+            context = itemView.getContext();
+
             textView = (TextView) itemView.findViewById(R.id.subject_textview);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Intent intent = new Intent(context, ArticleViewActivity.class);
+                    intent.putExtra("link", SubjectValues.get(getLayoutPosition()).get("link"));
+                    intent.putExtra("text", SubjectValues.get(getLayoutPosition()).get("text"));
+                    context.startActivity(intent);
                     Toast.makeText(context, SubjectValues.get(getLayoutPosition()).get("link"), Toast.LENGTH_LONG).show();
                     Log.e("Item Click Position", String.valueOf(getLayoutPosition()));
                 }
             });
         }
-
-//        public ViewHolder(View itemView) {
-//            super(itemView);
-//            textView = (TextView) itemView.findViewById(R.id.subject_textview);
-//
-////            textView.setOnClickListener(this);
-////            itemView.setOnClickListener(this);
-//        }
-
-//        @Override
-//        public void onClick(View view) {
-//            passing the clicked position to the parent class
-//            onItemClickListener.onItemClick(null, view, getAdapterPosition(), view.getId());
-//        }
     }
 }
