@@ -11,6 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.shoegazerwithak.lesswrongeveryday.ArticleViewActivity;
+import com.shoegazerwithak.lesswrongeveryday.FragmentArtist;
+import com.shoegazerwithak.lesswrongeveryday.MainActivity;
 import com.shoegazerwithak.lesswrongeveryday.R;
 
 import java.util.List;
@@ -18,10 +20,12 @@ import java.util.Map;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private List<Map<String, String>> SubjectValues;
+    private FragmentArtist.ArtistsFragmentInteractionListener mListener;
     private Context context;
 
-    public RecyclerViewAdapter(Context context1, List<Map<String, String>> SubjectValues1) {
+    public RecyclerViewAdapter(Context context1, List<Map<String, String>> SubjectValues1, FragmentArtist.ArtistsFragmentInteractionListener listener) {
         SubjectValues = SubjectValues1;
+        mListener = listener;
         context = context1;
     }
 
@@ -42,26 +46,27 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return SubjectValues.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView textView;
-        private Context context;
 
         ViewHolder(View itemView) {
             super(itemView);
             context = itemView.getContext();
 
             textView = (TextView) itemView.findViewById(R.id.subject_textview);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(context, ArticleViewActivity.class);
-                    intent.putExtra("link", SubjectValues.get(getLayoutPosition()).get("link"));
-                    intent.putExtra("text", SubjectValues.get(getLayoutPosition()).get("text"));
-                    context.startActivity(intent);
-                    Toast.makeText(context, SubjectValues.get(getLayoutPosition()).get("link"), Toast.LENGTH_LONG).show();
-                    Log.e("Item Click Position", String.valueOf(getLayoutPosition()));
-                }
-            });
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            mListener.onListItemClick(SubjectValues.get(getLayoutPosition()));
+//            Intent intent = new Intent(context, ArticleViewActivity.class);
+//            intent.putExtra("link", SubjectValues.get(getLayoutPosition()).get("link"));
+//            intent.putExtra("text", SubjectValues.get(getLayoutPosition()).get("text"));
+//            context.startActivity(intent);
+
+//            Toast.makeText(context, SubjectValues.get(getLayoutPosition()).get("link"), Toast.LENGTH_LONG).show();
+//            Log.e("Item Click Position", String.valueOf(getLayoutPosition()));
         }
     }
 }
