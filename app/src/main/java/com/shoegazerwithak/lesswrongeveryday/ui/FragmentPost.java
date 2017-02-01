@@ -28,8 +28,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import butterknife.ButterKnife;
-
 public class FragmentPost extends Fragment {
     protected RecyclerView mRecyclerViewPost;
     // recyclerview_post
@@ -109,7 +107,7 @@ public class FragmentPost extends Fragment {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            Document doc = Jsoup.parse(result, "https://lesswrong.ru");
+            Document doc = Jsoup.parse(result, "http://lesswrong.ru");
             Elements list = doc.select(".leaf:not(.menu-depth-1)");
             List<Map<String, String>> links = new ArrayList<>();
             for (Element el : list) {
@@ -119,7 +117,6 @@ public class FragmentPost extends Fragment {
                 mMap.put("link", link);
                 links.add(mMap);
             }
-            Log.e("ANSWER", "" + links);
             setupRecyclerView(links);
         }
     }
