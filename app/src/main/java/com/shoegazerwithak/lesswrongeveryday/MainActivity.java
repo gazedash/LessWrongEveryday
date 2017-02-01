@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements FragmentPost.Arti
     }
 
     private void setFragment(Fragment fragment) {
-        mFragmentManager.beginTransaction().replace(R.id.recyclerview, fragment).commit();
+        mFragmentManager.beginTransaction().replace(R.id.container, fragment).commit();
     }
 
     @Override
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements FragmentPost.Arti
 //        Intent detailsActivity = new Intent(this, ArticleViewActivity.class);
 //        detailsActivity.putExtra("text", item.get("text"));
 //        startActivity(detailsActivity);
-        Toast.makeText(context, item.get("link"), Toast.LENGTH_LONG).show();
+        Toast.makeText(context, String.valueOf(item), Toast.LENGTH_LONG).show();
         Log.e("Item Click Position", String.valueOf(item.get("link")));
     }
 }

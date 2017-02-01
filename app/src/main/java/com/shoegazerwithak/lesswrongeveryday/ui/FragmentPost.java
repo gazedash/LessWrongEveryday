@@ -32,8 +32,8 @@ import butterknife.ButterKnife;
 
 public class FragmentPost extends Fragment {
     protected RecyclerView mRecyclerViewPost;
+    // recyclerview_post
     RecyclerView.Adapter recyclerViewAdapter;
-    RecyclerView.LayoutManager recyclerViewLayoutManager;
     OkHttpClient client = new OkHttpClient();
     private ArtistsFragmentInteractionListener mListener;
     private List<Map<String, String>> mData;
@@ -49,6 +49,7 @@ public class FragmentPost extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_post, container, false);
+        mRecyclerViewPost = (RecyclerView) rootView.findViewById(R.id.recyclerview_post);
 //        getActivity().setTitle(R.string.app_name);
         runJsonParsingTask(); // Download JSON, parse it and configure RecyclerView to show it
         return rootView;
@@ -77,7 +78,7 @@ public class FragmentPost extends Fragment {
 
     private void setupRecyclerView(List<Map<String, String>> data) {
         mData = data;
-        recyclerViewAdapter = new RecyclerViewAdapter(mData, mListener);
+        recyclerViewAdapter = new RecyclerViewAdapter(data, mListener);
         mRecyclerViewPost.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerViewPost.setAdapter(recyclerViewAdapter);
     }
