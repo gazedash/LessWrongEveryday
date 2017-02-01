@@ -1,6 +1,7 @@
 package com.shoegazerwithak.lesswrongeveryday;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -33,10 +34,10 @@ public class MainActivity extends AppCompatActivity implements FragmentPost.Arti
 
     @Override
     public void onListItemClick(Map<String, String> item) {
-//        Intent detailsActivity = new Intent(this, ArticleViewActivity.class);
-//        detailsActivity.putExtra("text", item.get("text"));
-//        startActivity(detailsActivity);
-        Toast.makeText(context, String.valueOf(item), Toast.LENGTH_LONG).show();
-        Log.e("Item Click Position", String.valueOf(item.get("link")));
+        Intent detailsActivity = new Intent(this, ArticleViewActivity.class);
+        detailsActivity.putExtra("text", item.get("text"));
+        startActivity(detailsActivity);
+//        Toast.makeText(context, String.valueOf(item), Toast.LENGTH_LONG).show();
+//        Log.e("Item Click Position", String.valueOf(item));
     }
 }
