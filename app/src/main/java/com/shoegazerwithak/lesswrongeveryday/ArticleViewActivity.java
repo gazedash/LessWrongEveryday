@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.jsoup.Jsoup;
@@ -60,7 +61,6 @@ public class ArticleViewActivity extends Activity {
                 Document doc = Jsoup.parse(result, "http://lesswrong.ru");
                 Elements list = doc.select(".field-items");
                 textView.setText(list.text());
-                textView.setMovementMethod(new ScrollingMovementMethod());
             }
         }.execute(link);
     }
