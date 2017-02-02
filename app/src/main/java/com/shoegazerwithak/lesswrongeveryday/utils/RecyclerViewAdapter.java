@@ -24,14 +24,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public RecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view1 = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_article_view, parent, false);
+        View view1 = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_fragment, parent, false);
         return new ViewHolder(view1);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Map<String, String> mMap = SubjectValues.get(position);
-        holder.articleView.setText(mMap.get("text"));
+        holder.articleName.setText(mMap.get("text"));
     }
 
     @Override
@@ -40,12 +40,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView articleView;
+        TextView articleName;
 
         public ViewHolder(View view) {
             super(view);
             view.setOnClickListener(this);
-            articleView = (TextView) view.findViewById(R.id.article_view);
+            articleName = (TextView) view.findViewById(R.id.article_name);
         }
 
         @Override

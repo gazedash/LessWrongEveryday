@@ -47,7 +47,10 @@ public class FragmentPost extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_post, container, false);
         mRecyclerViewPost = (RecyclerView) rootView.findViewById(R.id.recyclerview_post);
-//        getActivity().setTitle(R.string.app_name);
+
+        // To avoid "No adapter attached; skipping layout"
+        mData = new ArrayList<>();
+        mRecyclerViewPost.setAdapter(new RecyclerViewAdapter(mData, mListener));
         runJsonParsingTask(); // Download JSON, parse it and configure RecyclerView to show it
         return rootView;
     }
@@ -75,7 +78,7 @@ public class FragmentPost extends Fragment {
 
     private void setupRecyclerView(List<Map<String, String>> data) {
         mData = data;
-        recyclerViewAdapter = new RecyclerViewAdapter(data, mListener);
+        recyclerViewAdapter = new RecyclerViewAdapter(mData, mListener);
         mRecyclerViewPost.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerViewPost.setAdapter(recyclerViewAdapter);
     }
@@ -91,6 +94,7 @@ public class FragmentPost extends Fragment {
         @Override
         protected String doInBackground(String... params) {
             Request request = new Request.Builder()
+                    // Possible NullPointerException...
                     .url(params[0])
                     .build();
             Response response;

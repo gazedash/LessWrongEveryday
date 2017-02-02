@@ -33,11 +33,11 @@ public class MainActivity extends AppCompatActivity implements FragmentPost.Arti
 
     @Override
     public void onListItemClick(Map<String, String> item) {
-        Intent detailsActivity = new Intent(this, ArticleViewActivity.class);
-        detailsActivity.putExtra("text", item.get("text"));
-        detailsActivity.putExtra("link", item.get("link"));
-        Log.d("Item Click Position", String.valueOf(item));
-        startActivity(detailsActivity);
+        Intent articleActivity = new Intent(this, ArticleViewActivity.class);
+        articleActivity.putExtra("text", item.get("text"));
+        articleActivity.putExtra("link", item.get("link"));
+        Log.d("Item Click", String.valueOf(item));
+        startActivity(articleActivity);
 //        Toast.makeText(context, String.valueOf(item), Toast.LENGTH_LONG).show();
     }
 }
