@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnScrollChangeListener;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -26,7 +28,8 @@ import okhttp3.Response;
 
 public class ArticleViewActivity extends Activity {
     OkHttpClient client = new OkHttpClient();
-    TextView textView;
+    TextView titleView;
+    TextView articleView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +39,9 @@ public class ArticleViewActivity extends Activity {
         String link = bundle.getString("link");
         String text = bundle.getString("text");
 
-        textView = (TextView) findViewById(R.id.article_view);
-        textView.setText(text);
+        titleView = (TextView) findViewById(R.id.article_title);
+        titleView.setText(text);
+        articleView = (TextView) findViewById(R.id.article_view);
 
         new AsyncTask<String, Integer, String>(){
             @Override
@@ -60,7 +64,7 @@ public class ArticleViewActivity extends Activity {
                 super.onPostExecute(result);
                 Document doc = Jsoup.parse(result, "http://lesswrong.ru");
                 Elements list = doc.select(".field-items");
-                textView.setText(list.text());
+                articleView.setText(list.text());
             }
         }.execute(link);
     }
