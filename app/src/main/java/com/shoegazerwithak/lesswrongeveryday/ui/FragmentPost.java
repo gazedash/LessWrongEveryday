@@ -30,7 +30,6 @@ import okhttp3.Response;
 
 public class FragmentPost extends Fragment {
     protected RecyclerView mRecyclerViewPost;
-    // recyclerview_post
     RecyclerView.Adapter recyclerViewAdapter;
     OkHttpClient client = new OkHttpClient();
     private ArtistsFragmentInteractionListener mListener;

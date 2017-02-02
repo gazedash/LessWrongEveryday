@@ -37,7 +37,6 @@ public class ArticleViewActivity extends Activity {
 
         textView = (TextView) findViewById(R.id.article_view);
         textView.setText(text);
-        textView.setMovementMethod(new ScrollingMovementMethod());
 
         new AsyncTask<String, Integer, String>(){
             @Override
@@ -61,6 +60,7 @@ public class ArticleViewActivity extends Activity {
                 Document doc = Jsoup.parse(result, "http://lesswrong.ru");
                 Elements list = doc.select(".field-items");
                 textView.setText(list.text());
+                textView.setMovementMethod(new ScrollingMovementMethod());
             }
         }.execute(link);
     }

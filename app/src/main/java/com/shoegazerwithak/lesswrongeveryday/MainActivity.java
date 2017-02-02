@@ -14,7 +14,6 @@ import com.shoegazerwithak.lesswrongeveryday.ui.FragmentPost;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements FragmentPost.ArtistsFragmentInteractionListener {
-    Context context;
     private FragmentManager mFragmentManager;
     private FragmentPost mFragmentPost;
 
@@ -37,8 +36,8 @@ public class MainActivity extends AppCompatActivity implements FragmentPost.Arti
         Intent detailsActivity = new Intent(this, ArticleViewActivity.class);
         detailsActivity.putExtra("text", item.get("text"));
         detailsActivity.putExtra("link", item.get("link"));
+        Log.d("Item Click Position", String.valueOf(item));
         startActivity(detailsActivity);
 //        Toast.makeText(context, String.valueOf(item), Toast.LENGTH_LONG).show();
-//        Log.e("Item Click Position", String.valueOf(item));
     }
 }
