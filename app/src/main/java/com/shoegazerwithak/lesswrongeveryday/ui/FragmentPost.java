@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.shoegazerwithak.lesswrongeveryday.R;
+import com.shoegazerwithak.lesswrongeveryday.constants.Constants;
 import com.shoegazerwithak.lesswrongeveryday.model.Article;
 import com.shoegazerwithak.lesswrongeveryday.utils.RecyclerViewAdapter;
 
@@ -75,7 +76,7 @@ public class FragmentPost extends Fragment {
 
     public void runJsonParsingTask() {
         JsonDownloaderTask jsonDownloader = new JsonDownloaderTask();
-        jsonDownloader.execute("http://lesswrong.ru/");
+        jsonDownloader.execute(Constants.API_ENDPOINT);
     }
 
     private void setupRecyclerView(List<Article> data) {
@@ -112,12 +113,12 @@ public class FragmentPost extends Fragment {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            Document doc = Jsoup.parse(result, "http://lesswrong.ru");
-            Elements list = doc.select(".leaf:not(.menu-depth-1)");
+            Document doc = Jsoup.parse(result, Constants.API_ENDPOINT);
+            Elements list = doc.select(Constants.LIST_SELECTOR);
             List<Article> articles = new ArrayList<>();
             for (Element el : list) {
                 String title = el.text();
-                String link = el.child(0).attr("abs:href");
+                String link = el.child(0).attr(Constants.HREF_SELECTOR);
                 Article article = new Article(title, link);
                 articles.add(article);
             }

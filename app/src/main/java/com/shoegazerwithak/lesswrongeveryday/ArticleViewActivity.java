@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
+import com.shoegazerwithak.lesswrongeveryday.constants.Constants;
 import com.shoegazerwithak.lesswrongeveryday.model.Article;
 
 import org.jsoup.Jsoup;
@@ -27,8 +28,8 @@ public class ArticleViewActivity extends Activity {
     FloatingActionButton fab;
     TextView articleView;
     Article article;
-    String link;
-    String title;
+    String link = "";
+    String title = "";
 
     OnClickListener fabOnClickListener;
 
@@ -37,9 +38,12 @@ public class ArticleViewActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_view);
         Bundle bundle = getIntent().getExtras();
-        article = (Article) bundle.get("article");
-        link = article != null ? article.link : "";
-        title = article != null ? article.title : "";
+        article = (Article) bundle.get(Constants.BUNDLE_ARTICLE_NAME);
+
+        if (article != null) {
+            link = article.link;
+            title = article.title;
+        }
 
         titleView = (TextView) findViewById(R.id.article_title);
         fab = (FloatingActionButton) findViewById(R.id.button_article_done);
@@ -49,7 +53,9 @@ public class ArticleViewActivity extends Activity {
         fabOnClickListener = new fabListenerClass();
         fab.setOnClickListener(fabOnClickListener);
 
-        getHtmlParseAndSetText().execute(link);
+        if (link != null && link.length() > 0) {
+            getHtmlParseAndSetText().execute(link);
+        }
     }
 
     @NonNull
@@ -73,8 +79,8 @@ public class ArticleViewActivity extends Activity {
             @Override
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
-                Document doc = Jsoup.parse(result, "http://lesswrong.ru");
-                Elements textNode = doc.select(".field-items");
+                Document doc = Jsoup.parse(result, Constants.API_ENDPOINT);
+                Elements textNode = doc.select(Constants.ARTICLE_TEXT_SELECTOR);
                 articleView.setText(textNode.text());
                 fab.setVisibility(View.VISIBLE);
             }
