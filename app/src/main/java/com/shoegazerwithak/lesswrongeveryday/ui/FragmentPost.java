@@ -3,6 +3,7 @@ package com.shoegazerwithak.lesswrongeveryday.ui;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.shoegazerwithak.lesswrongeveryday.R;
+import com.shoegazerwithak.lesswrongeveryday.model.Article;
 import com.shoegazerwithak.lesswrongeveryday.utils.RecyclerViewAdapter;
 
 import org.jsoup.Jsoup;
@@ -33,7 +35,7 @@ public class FragmentPost extends Fragment {
     RecyclerView.Adapter recyclerViewAdapter;
     OkHttpClient client = new OkHttpClient();
     private ArtistsFragmentInteractionListener mListener;
-    private List<Map<String, String>> mData;
+    private List<Article> mData;
 
     public FragmentPost() {
     }
@@ -76,7 +78,7 @@ public class FragmentPost extends Fragment {
         jsonDownloader.execute("http://lesswrong.ru/");
     }
 
-    private void setupRecyclerView(List<Map<String, String>> data) {
+    private void setupRecyclerView(List<Article> data) {
         mData = data;
         recyclerViewAdapter = new RecyclerViewAdapter(mData, mListener);
         mRecyclerViewPost.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -84,7 +86,7 @@ public class FragmentPost extends Fragment {
     }
 
     public interface ArtistsFragmentInteractionListener {
-        void onListItemClick(Map<String, String> artistItem);
+        void onListItemClick(Article artistItem);
     }
 
     /**
@@ -112,15 +114,14 @@ public class FragmentPost extends Fragment {
             super.onPostExecute(result);
             Document doc = Jsoup.parse(result, "http://lesswrong.ru");
             Elements list = doc.select(".leaf:not(.menu-depth-1)");
-            List<Map<String, String>> links = new ArrayList<>();
+            List<Article> articles = new ArrayList<>();
             for (Element el : list) {
+                String title = el.text();
                 String link = el.child(0).attr("abs:href");
-                Map<String, String> mMap = new HashMap<>();
-                mMap.put("text", el.text());
-                mMap.put("link", link);
-                links.add(mMap);
+                Article article = new Article(title, link);
+                articles.add(article);
             }
-            setupRecyclerView(links);
+            setupRecyclerView(articles);
         }
     }
 }

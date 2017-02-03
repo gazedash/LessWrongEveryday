@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
+import com.shoegazerwithak.lesswrongeveryday.model.Article;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -24,6 +26,9 @@ public class ArticleViewActivity extends Activity {
     TextView titleView;
     FloatingActionButton fab;
     TextView articleView;
+    Article article;
+    String link;
+    String title;
 
     OnClickListener fabOnClickListener;
 
@@ -32,13 +37,14 @@ public class ArticleViewActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_view);
         Bundle bundle = getIntent().getExtras();
-        String link = bundle.getString("link");
-        String text = bundle.getString("text");
+        article = (Article) bundle.get("article");
+        link = article != null ? article.link : "";
+        title = article != null ? article.title : "";
 
         titleView = (TextView) findViewById(R.id.article_title);
         fab = (FloatingActionButton) findViewById(R.id.button_article_done);
         articleView = (TextView) findViewById(R.id.article_view);
-        titleView.setText(text);
+        titleView.setText(title);
 
         fabOnClickListener = new fabListenerClass();
         fab.setOnClickListener(fabOnClickListener);
@@ -68,8 +74,8 @@ public class ArticleViewActivity extends Activity {
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
                 Document doc = Jsoup.parse(result, "http://lesswrong.ru");
-                Elements list = doc.select(".field-items");
-                articleView.setText(list.text());
+                Elements textNode = doc.select(".field-items");
+                articleView.setText(textNode.text());
                 fab.setVisibility(View.VISIBLE);
             }
         };
@@ -77,7 +83,7 @@ public class ArticleViewActivity extends Activity {
 
     class fabListenerClass implements OnClickListener {
         public void onClick(View v) {
-            Log.d("Fab click", "1231");
+            Log.d("Fab click", link);
         }
     }
 }

@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.shoegazerwithak.lesswrongeveryday.model.Article;
 import com.shoegazerwithak.lesswrongeveryday.ui.FragmentPost;
 
 import java.util.Map;
@@ -32,12 +33,10 @@ public class MainActivity extends AppCompatActivity implements FragmentPost.Arti
     }
 
     @Override
-    public void onListItemClick(Map<String, String> item) {
+    public void onListItemClick(Article article) {
         Intent articleActivity = new Intent(this, ArticleViewActivity.class);
-        articleActivity.putExtra("text", item.get("text"));
-        articleActivity.putExtra("link", item.get("link"));
-        Log.d("Item Click", String.valueOf(item));
+        articleActivity.putExtra("article", article);
+        Log.d("Item Click", String.valueOf(article));
         startActivity(articleActivity);
-//        Toast.makeText(context, String.valueOf(item), Toast.LENGTH_LONG).show();
     }
 }

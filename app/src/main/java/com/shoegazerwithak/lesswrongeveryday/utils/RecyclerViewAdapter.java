@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.shoegazerwithak.lesswrongeveryday.R;
+import com.shoegazerwithak.lesswrongeveryday.model.Article;
 import com.shoegazerwithak.lesswrongeveryday.ui.FragmentPost;
 
 import java.util.List;
@@ -15,9 +16,9 @@ import java.util.Map;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private final FragmentPost.ArtistsFragmentInteractionListener mListener;
-    private List<Map<String, String>> SubjectValues;
+    private List<Article> SubjectValues;
 
-    public RecyclerViewAdapter(List<Map<String, String>> SubjectValues1, FragmentPost.ArtistsFragmentInteractionListener listener) {
+    public RecyclerViewAdapter(List<Article> SubjectValues1, FragmentPost.ArtistsFragmentInteractionListener listener) {
         SubjectValues = SubjectValues1;
         mListener = listener;
     }
@@ -30,8 +31,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Map<String, String> mMap = SubjectValues.get(position);
-        holder.articleName.setText(mMap.get("text"));
+        Article mMap = SubjectValues.get(position);
+        holder.articleName.setText(mMap.title);
     }
 
     @Override
