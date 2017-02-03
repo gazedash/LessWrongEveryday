@@ -1,26 +1,18 @@
 package com.shoegazerwithak.lesswrongeveryday;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnScrollChangeListener;
-import android.widget.ScrollView;
+import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -28,8 +20,12 @@ import okhttp3.Response;
 
 public class ArticleViewActivity extends Activity {
     OkHttpClient client = new OkHttpClient();
+
     TextView titleView;
+    FloatingActionButton fab;
     TextView articleView;
+
+    OnClickListener fabOnClickListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +36,19 @@ public class ArticleViewActivity extends Activity {
         String text = bundle.getString("text");
 
         titleView = (TextView) findViewById(R.id.article_title);
-        titleView.setText(text);
+        fab = (FloatingActionButton) findViewById(R.id.button_article_done);
         articleView = (TextView) findViewById(R.id.article_view);
+        titleView.setText(text);
 
-        new AsyncTask<String, Integer, String>(){
+        fabOnClickListener = new fabListenerClass();
+        fab.setOnClickListener(fabOnClickListener);
+
+        getHtmlParseAndSetText().execute(link);
+    }
+
+    @NonNull
+    private AsyncTask<String, Integer, String> getHtmlParseAndSetText() {
+        return new AsyncTask<String, Integer, String>() {
             @Override
             protected String doInBackground(String... params) {
                 Request request = new Request.Builder()
@@ -65,7 +70,14 @@ public class ArticleViewActivity extends Activity {
                 Document doc = Jsoup.parse(result, "http://lesswrong.ru");
                 Elements list = doc.select(".field-items");
                 articleView.setText(list.text());
+                fab.setVisibility(View.VISIBLE);
             }
-        }.execute(link);
+        };
+    }
+
+    class fabListenerClass implements OnClickListener {
+        public void onClick(View v) {
+            Log.d("Fab click", "1231");
+        }
     }
 }
