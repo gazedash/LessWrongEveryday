@@ -6,5 +6,7 @@ public class Constants {
     public static final String HREF_SELECTOR = "abs:href";
     public static final String ARTICLE_TEXT_SELECTOR = ".field-items";
     public static final String BUNDLE_ARTICLE_NAME = "article";
-//    public static final String CACHED_FILE_NAME = "artists.json";
+    public static final String CACHED_FILE_NAME = "articles.json";
+    public static final String CACHED_ARRAY_NAME = "list";
+    public static final String EMPTY_JSON_ARRAY = "{\"list\":[]}";
 }

@@ -87,7 +87,9 @@ public class FragmentPost extends Fragment {
     }
 
     public interface ArtistsFragmentInteractionListener {
-        void onListItemClick(Article artistItem);
+        void onListItemClick(Article artistItem, View view);
+
+//        void onListItemClick(Article artistItem);
     }
 
     /**

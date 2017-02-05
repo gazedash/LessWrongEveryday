@@ -2,7 +2,6 @@ package com.shoegazerwithak.lesswrongeveryday.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.TextUtils;
 
 /**
  * POJO to save data from JSON

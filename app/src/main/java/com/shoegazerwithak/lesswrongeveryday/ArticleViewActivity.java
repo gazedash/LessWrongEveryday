@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.shoegazerwithak.lesswrongeveryday.constants.Constants;
 import com.shoegazerwithak.lesswrongeveryday.model.Article;
+import com.shoegazerwithak.lesswrongeveryday.utils.JsonCacheHelper;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -89,7 +90,7 @@ public class ArticleViewActivity extends Activity {
 
     class fabListenerClass implements OnClickListener {
         public void onClick(View v) {
-            Log.d("Fab click", link);
+            JsonCacheHelper.appendToCachedArray(v.getContext(), link);
         }
     }
 }

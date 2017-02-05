@@ -7,11 +7,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.shoegazerwithak.lesswrongeveryday.constants.Constants;
 import com.shoegazerwithak.lesswrongeveryday.model.Article;
 import com.shoegazerwithak.lesswrongeveryday.ui.FragmentPost;
+import com.shoegazerwithak.lesswrongeveryday.utils.JsonCacheHelper;
 
 import java.util.Map;
 
@@ -34,10 +36,9 @@ public class MainActivity extends AppCompatActivity implements FragmentPost.Arti
     }
 
     @Override
-    public void onListItemClick(Article article) {
+    public void onListItemClick(Article article, View view) {
         Intent articleActivity = new Intent(this, ArticleViewActivity.class);
         articleActivity.putExtra(Constants.BUNDLE_ARTICLE_NAME, article);
-        Log.d("Item Click", String.valueOf(article));
         startActivity(articleActivity);
     }
 }
