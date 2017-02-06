@@ -7,6 +7,9 @@ public class Constants {
     public static final String ARTICLE_TEXT_SELECTOR = ".field-items";
     public static final String BUNDLE_ARTICLE_NAME = "article";
     public static final String CACHED_FILE_NAME = "articles.json";
+    public static final String CACHED_ARTICLES_LIST = "articlesCache.json";
     public static final String CACHED_ARRAY_NAME = "list";
     public static final String EMPTY_JSON_ARRAY = "{\"list\":[]}";
+    public static final String ARTICLE_JSON_LINK = "link";
+    public static final String ARTICLE_JSON_TITLE = "title";
 }

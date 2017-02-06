@@ -1,6 +1,7 @@
 package com.shoegazerwithak.lesswrongeveryday;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -91,6 +92,12 @@ public class ArticleViewActivity extends Activity {
     class fabListenerClass implements OnClickListener {
         public void onClick(View v) {
             JsonCacheHelper.appendToCachedArray(v.getContext(), link);
+            /*
+            Fix: do not start an activity, just notify or something (onStart)
+            finish();
+             */
+            Intent mainActivity = new Intent(v.getContext(), MainActivity.class);
+            startActivity(mainActivity);
         }
     }
 }

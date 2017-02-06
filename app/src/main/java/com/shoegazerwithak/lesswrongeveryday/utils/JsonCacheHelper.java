@@ -38,14 +38,27 @@ public abstract class JsonCacheHelper {
         cacheJson(context, jsonContents, Constants.CACHED_FILE_NAME);
     }
 
+    public static int indexOfJSONArray(JSONArray arr, Object element) {
+        try {
+            for (int i = 0; i < arr.length(); i++) {
+                if (element.toString().equals(arr.getString(i))) {
+                    return i;
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return -1;
+        }
+        return -1;
+    }
+
     public static void appendToCachedArray(Context context, String element, String fileName, String key) {
         JSONArray jsonArray = getJsonArray(context, fileName, key);
-        if (jsonArray != null) {
+        if (jsonArray != null && indexOfJSONArray(jsonArray, element) < 0) {
             jsonArray.put(element);
             JSONObject jsonObject = new JSONObject();
             try {
-                jsonObject.put("list", jsonArray);
-                Log.d("about to store", jsonObject.toString());
+                jsonObject.put(key, jsonArray);
                 cacheJson(context, jsonObject.toString(), fileName);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -78,11 +91,9 @@ public abstract class JsonCacheHelper {
                 stringBuilder.append(line);
             }
             return stringBuilder.toString();
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
             cacheJson(context, Constants.EMPTY_JSON_ARRAY, fileName);
-            Log.d("Ein", Constants.EMPTY_JSON_ARRAY);
             return Constants.EMPTY_JSON_ARRAY;
         } catch (IOException e) {
             e.printStackTrace();

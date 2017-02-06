@@ -36,7 +36,8 @@ public class MainActivity extends AppCompatActivity implements FragmentPost.Arti
     }
 
     @Override
-    public void onListItemClick(Article article, View view) {
+//    public void onListItemClick(Article article, View view) {
+    public void onListItemClick(Article article) {
         Intent articleActivity = new Intent(this, ArticleViewActivity.class);
         articleActivity.putExtra(Constants.BUNDLE_ARTICLE_NAME, article);
         startActivity(articleActivity);

@@ -15,17 +15,24 @@ import android.view.ViewGroup;
 import com.shoegazerwithak.lesswrongeveryday.R;
 import com.shoegazerwithak.lesswrongeveryday.constants.Constants;
 import com.shoegazerwithak.lesswrongeveryday.model.Article;
+import com.shoegazerwithak.lesswrongeveryday.utils.JsonCacheHelper;
 import com.shoegazerwithak.lesswrongeveryday.utils.RecyclerViewAdapter;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -44,6 +51,21 @@ public class FragmentPost extends Fragment {
     public static FragmentPost newInstance() {
         return new FragmentPost();
     }
+
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        Log.d("onResume", String.valueOf(mData));
+//    }
+
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        mData = filterReadArticles(mData);
+//        recyclerViewAdapter = new RecyclerViewAdapter(mData, mListener);
+//        mRecyclerViewPost.setAdapter(recyclerViewAdapter);
+//        Log.d("onStart", String.valueOf(mData.size()));
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -87,9 +109,8 @@ public class FragmentPost extends Fragment {
     }
 
     public interface ArtistsFragmentInteractionListener {
-        void onListItemClick(Article artistItem, View view);
-
-//        void onListItemClick(Article artistItem);
+//        void onListItemClick(Article artistItem, View view);
+        void onListItemClick(Article artistItem);
     }
 
     /**
@@ -98,6 +119,14 @@ public class FragmentPost extends Fragment {
     private class JsonDownloaderTask extends AsyncTask<String, Integer, String> {
         @Override
         protected String doInBackground(String... params) {
+            String json = JsonCacheHelper.getCachedJson(getContext(), Constants.CACHED_ARTICLES_LIST);
+            JSONArray jsonArray;
+            try {
+                jsonArray = new JSONArray(json);
+                Log.d("got array", jsonArray.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             Request request = new Request.Builder()
                     // Possible NullPointerException...
                     .url(params[0])
@@ -118,12 +147,24 @@ public class FragmentPost extends Fragment {
             Document doc = Jsoup.parse(result, Constants.API_ENDPOINT);
             Elements list = doc.select(Constants.LIST_SELECTOR);
             List<Article> articles = new ArrayList<>();
+            JSONArray articlesJSON = new JSONArray();
             for (Element el : list) {
-                String title = el.text();
                 String link = el.child(0).attr(Constants.HREF_SELECTOR);
-                Article article = new Article(title, link);
-                articles.add(article);
+                if (JsonCacheHelper.indexOfJSONArray(JsonCacheHelper.getJsonArray(getContext()), link) < 0) {
+                    String title = el.text();
+                    Article article = new Article(title, link);
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put(Constants.ARTICLE_JSON_LINK, link);
+                        jsonObject.put(Constants.ARTICLE_JSON_TITLE, title);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    articlesJSON.put(jsonObject);
+                    articles.add(article);
+                }
             }
+            JsonCacheHelper.cacheJson(getContext(), articlesJSON.toString(), Constants.CACHED_ARTICLES_LIST);
             setupRecyclerView(articles);
         }
     }
