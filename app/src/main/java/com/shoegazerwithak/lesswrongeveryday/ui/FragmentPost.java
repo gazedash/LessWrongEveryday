@@ -116,56 +116,59 @@ public class FragmentPost extends Fragment {
     /**
      * Downloads JSON file from specified URL.
      */
-    private class JsonDownloaderTask extends AsyncTask<String, Integer, String> {
+    private class JsonDownloaderTask extends AsyncTask<String, Integer, List<Article>> {
         @Override
-        protected String doInBackground(String... params) {
+        protected List<Article> doInBackground(String... params) {
             String json = JsonCacheHelper.getCachedJson(getContext(), Constants.CACHED_ARTICLES_LIST);
             JSONArray jsonArray;
+            List<Article> articles = new ArrayList<>();
+
             try {
                 jsonArray = new JSONArray(json);
-                Log.d("got array", jsonArray.toString());
+                return JsonCacheHelper.getCachedArticles(jsonArray);
             } catch (JSONException e) {
                 e.printStackTrace();
+                Request request = new Request.Builder()
+                        // Possible NullPointerException...
+                        .url(params[0])
+                        .build();
+                Response response;
+                try {
+                    response = client.newCall(request).execute();
+                    String body = response.body().toString();
+                    Document doc = Jsoup.parse(body, Constants.API_ENDPOINT);
+                    Elements list = doc.select(Constants.LIST_SELECTOR);
+                    JSONArray articlesJSON = new JSONArray();
+                    JSONArray readArticles = JsonCacheHelper.getJsonArray(getContext());
+                    for (Element el : list) {
+                        String link = el.child(0).attr(Constants.HREF_SELECTOR);
+                        if (JsonCacheHelper.indexOfJSONArray(readArticles, link) < 0) {
+                            String title = el.text();
+                            Article article = new Article(title, link);
+                            JSONObject jsonObject = new JSONObject();
+                            try {
+                                jsonObject.put(Constants.ARTICLE_JSON_LINK, link);
+                                jsonObject.put(Constants.ARTICLE_JSON_TITLE, title);
+                            } catch (JSONException e3) {
+                                e3.printStackTrace();
+                            }
+                            articlesJSON.put(jsonObject);
+                            articles.add(article);
+                        }
+                    }
+                    JsonCacheHelper.cacheJson(getContext(), articlesJSON.toString(), Constants.CACHED_ARTICLES_LIST);
+                    return articles;
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+                return null;
             }
-            Request request = new Request.Builder()
-                    // Possible NullPointerException...
-                    .url(params[0])
-                    .build();
-            Response response;
-            try {
-                response = client.newCall(request).execute();
-                return response.body().string();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
         }
 
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(List<Article> result) {
             super.onPostExecute(result);
-            Document doc = Jsoup.parse(result, Constants.API_ENDPOINT);
-            Elements list = doc.select(Constants.LIST_SELECTOR);
-            List<Article> articles = new ArrayList<>();
-            JSONArray articlesJSON = new JSONArray();
-            for (Element el : list) {
-                String link = el.child(0).attr(Constants.HREF_SELECTOR);
-                if (JsonCacheHelper.indexOfJSONArray(JsonCacheHelper.getJsonArray(getContext()), link) < 0) {
-                    String title = el.text();
-                    Article article = new Article(title, link);
-                    JSONObject jsonObject = new JSONObject();
-                    try {
-                        jsonObject.put(Constants.ARTICLE_JSON_LINK, link);
-                        jsonObject.put(Constants.ARTICLE_JSON_TITLE, title);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    articlesJSON.put(jsonObject);
-                    articles.add(article);
-                }
-            }
-            JsonCacheHelper.cacheJson(getContext(), articlesJSON.toString(), Constants.CACHED_ARTICLES_LIST);
-            setupRecyclerView(articles);
+            setupRecyclerView(result);
         }
     }
 }

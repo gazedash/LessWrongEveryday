@@ -81,10 +81,12 @@ public class ArticleViewActivity extends Activity {
             @Override
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
-                Document doc = Jsoup.parse(result, Constants.API_ENDPOINT);
-                Elements textNode = doc.select(Constants.ARTICLE_TEXT_SELECTOR);
-                articleView.setText(textNode.text());
-                fab.setVisibility(View.VISIBLE);
+                if (result != null) {
+                    Document doc = Jsoup.parse(result, Constants.API_ENDPOINT);
+                    Elements textNode = doc.select(Constants.ARTICLE_TEXT_SELECTOR);
+                    articleView.setText(textNode.text());
+                    fab.setVisibility(View.VISIBLE);
+                }
             }
         };
     }

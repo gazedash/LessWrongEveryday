@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.shoegazerwithak.lesswrongeveryday.constants.Constants;
+import com.shoegazerwithak.lesswrongeveryday.model.Article;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,6 +17,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class JsonCacheHelper {
     /**
@@ -32,6 +35,18 @@ public abstract class JsonCacheHelper {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static List<Article> getCachedArticles(JSONArray jsonArray) throws JSONException {
+        List <Article> articles = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject jsonArticle = jsonArray.getJSONObject(i);
+            String title = jsonArticle.getString(Constants.ARTICLE_JSON_TITLE);
+            String link = jsonArticle.getString(Constants.ARTICLE_JSON_LINK);
+            Article article = new Article(title, link);
+            articles.add(article);
+        }
+        return articles;
     }
 
     public static void cacheJson(Context context, String jsonContents) {
