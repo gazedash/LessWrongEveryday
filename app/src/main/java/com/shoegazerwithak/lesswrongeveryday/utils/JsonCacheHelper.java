@@ -1,6 +1,7 @@
 package com.shoegazerwithak.lesswrongeveryday.utils;
 
 import android.content.Context;
+import android.util.Base64;
 import android.util.Log;
 
 import com.shoegazerwithak.lesswrongeveryday.constants.Constants;
@@ -9,16 +10,26 @@ import com.shoegazerwithak.lesswrongeveryday.model.Article;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public abstract class JsonCacheHelper {
     /**
@@ -92,7 +103,7 @@ public abstract class JsonCacheHelper {
      * <p/>
      * The snippet is taken from <a href="http://www.stackoverflow.com/questions/14768191/how-do-i-read-the-file-content-from-the-internal-storage-android-app">here</a>
      */
-    public static String getCachedJson(Context context, String fileName) {
+    public static String getCachedJson(Context context, String fileName, Boolean isArray) {
         FileInputStream inputStream;
         InputStreamReader inputStreamReader;
         BufferedReader bufferedReader;
@@ -108,8 +119,63 @@ public abstract class JsonCacheHelper {
             return stringBuilder.toString();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            cacheJson(context, Constants.EMPTY_JSON_ARRAY, fileName);
-            return Constants.EMPTY_JSON_ARRAY;
+            if (isArray) {
+                cacheJson(context, Constants.EMPTY_JSON_ARRAY, fileName);
+                return Constants.EMPTY_JSON_ARRAY;
+            } else {
+                return null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static String getTextFromBody(String body) {
+        Document doc = Jsoup.parse(body, Constants.API_ENDPOINT);
+        Elements textNode = doc.select(Constants.ARTICLE_TEXT_SELECTOR);
+        return textNode.text();
+    }
+
+    public static String sha1(String input) {
+        MessageDigest mDigest;
+        try {
+            mDigest = MessageDigest.getInstance("SHA1");
+            byte[] result = mDigest.digest(input.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte aResult : result) {
+                sb.append(Integer.toString((aResult & 0xff) + 0x100, 16).substring(1));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return input;
+        }
+    }
+
+    public static String getFileNameFromString(String str) {
+//        return new String(Base64.encode(str.substring(10).replaceAll("\\W+", "").getBytes(Charset.forName("UTF-8")), Base64.DEFAULT));
+        return new String(Base64.encode(sha1(str).substring(10).replaceAll("\\W+", "").getBytes(Charset.forName("UTF-8")), Base64.DEFAULT));
+    }
+
+    public static String getArticleTextAndCache(Context context, OkHttpClient client, String link) {
+        String fileName = getFileNameFromString(link);
+        File f = new File(link);
+        if(f.exists() && !f.isDirectory()) {
+            return JsonCacheHelper.getCachedJson(context, fileName, false);
+        }
+        String body;
+        Request requestText = new Request.Builder()
+                .url(link)
+                .build();
+        Response responseText;
+        try {
+            responseText = client.newCall(requestText).execute();
+            body = responseText.body().string();
+            body = JsonCacheHelper.getTextFromBody(body);
+            Log.d("GET TEXT", fileName + body);
+            JsonCacheHelper.cacheJson(context, body, fileName);
+            return body;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -117,11 +183,11 @@ public abstract class JsonCacheHelper {
     }
 
     public static String getCachedJson(Context context) {
-        return getCachedJson(context, Constants.CACHED_FILE_NAME);
+        return getCachedJson(context, Constants.CACHED_FILE_NAME, true);
     }
 
     public static JSONArray getJsonArray(Context context, String fileName, String key) {
-        String jsonString = getCachedJson(context, fileName);
+        String jsonString = getCachedJson(context, fileName, true);
         JSONObject jsonObject;
         try {
             jsonObject = new JSONObject(jsonString);

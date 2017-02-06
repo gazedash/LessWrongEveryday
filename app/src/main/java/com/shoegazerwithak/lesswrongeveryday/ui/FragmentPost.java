@@ -7,11 +7,13 @@ import android.os.Parcel;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.shoegazerwithak.lesswrongeveryday.ArticleViewActivity;
 import com.shoegazerwithak.lesswrongeveryday.R;
 import com.shoegazerwithak.lesswrongeveryday.constants.Constants;
 import com.shoegazerwithak.lesswrongeveryday.model.Article;
@@ -26,6 +28,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -119,7 +123,7 @@ public class FragmentPost extends Fragment {
     private class JsonDownloaderTask extends AsyncTask<String, Integer, List<Article>> {
         @Override
         protected List<Article> doInBackground(String... params) {
-            String json = JsonCacheHelper.getCachedJson(getContext(), Constants.CACHED_ARTICLES_LIST);
+            String json = JsonCacheHelper.getCachedJson(getContext(), Constants.CACHED_ARTICLES_LIST, true);
             JSONArray jsonArray;
             List<Article> articles = new ArrayList<>();
 
@@ -142,6 +146,8 @@ public class FragmentPost extends Fragment {
                     JSONArray readArticles = JsonCacheHelper.getJsonArray(getContext());
                     for (Element el : list) {
                         String link = el.child(0).attr(Constants.HREF_SELECTOR);
+                        JsonCacheHelper.getArticleTextAndCache(getContext(), client, link);
+
                         if (JsonCacheHelper.indexOfJSONArray(readArticles, link) < 0) {
                             String title = el.text();
                             Article article = new Article(title, link);

@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -15,13 +14,7 @@ import com.shoegazerwithak.lesswrongeveryday.constants.Constants;
 import com.shoegazerwithak.lesswrongeveryday.model.Article;
 import com.shoegazerwithak.lesswrongeveryday.utils.JsonCacheHelper;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
-
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class ArticleViewActivity extends Activity {
     OkHttpClient client = new OkHttpClient();
@@ -65,26 +58,21 @@ public class ArticleViewActivity extends Activity {
         return new AsyncTask<String, Integer, String>() {
             @Override
             protected String doInBackground(String... params) {
-                Request request = new Request.Builder()
-                        .url(params[0])
-                        .build();
-                Response response;
-                try {
-                    response = client.newCall(request).execute();
-                    return response.body().string();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                String articleUrl = params[0];
+                String fileName = JsonCacheHelper.getFileNameFromString(articleUrl);
+                String body = JsonCacheHelper.getCachedJson(ArticleViewActivity.this, fileName, false);
+                if (body != null) {
+                    return body;
+                } else {
+                    return JsonCacheHelper.getArticleTextAndCache(ArticleViewActivity.this, client, link);
                 }
-                return null;
             }
 
             @Override
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
                 if (result != null) {
-                    Document doc = Jsoup.parse(result, Constants.API_ENDPOINT);
-                    Elements textNode = doc.select(Constants.ARTICLE_TEXT_SELECTOR);
-                    articleView.setText(textNode.text());
+                    articleView.setText(result);
                     fab.setVisibility(View.VISIBLE);
                 }
             }
