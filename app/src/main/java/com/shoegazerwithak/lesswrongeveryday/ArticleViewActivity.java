@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -16,7 +18,7 @@ import com.shoegazerwithak.lesswrongeveryday.utils.JsonCacheHelper;
 
 import okhttp3.OkHttpClient;
 
-public class ArticleViewActivity extends Activity {
+public class ArticleViewActivity extends AppCompatActivity {
     OkHttpClient client = new OkHttpClient();
 
     TextView titleView;
@@ -49,7 +51,7 @@ public class ArticleViewActivity extends Activity {
         fab.setOnClickListener(fabOnClickListener);
 
         if (link != null && link.length() > 0) {
-            getHtmlParseAndSetText().execute(link);
+            getHtmlParseAndSetText().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, link);
         }
     }
 
@@ -82,12 +84,10 @@ public class ArticleViewActivity extends Activity {
     class fabListenerClass implements OnClickListener {
         public void onClick(View v) {
             JsonCacheHelper.appendToCachedArray(v.getContext(), link);
-            /*
-            Fix: do not start an activity, just notify or something (onStart)
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("Filter", true);
+            setResult(RESULT_OK, resultIntent);
             finish();
-             */
-            Intent mainActivity = new Intent(v.getContext(), MainActivity.class);
-            startActivity(mainActivity);
         }
     }
 }

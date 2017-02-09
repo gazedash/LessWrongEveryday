@@ -48,15 +48,20 @@ public abstract class JsonCacheHelper {
         }
     }
 
-    public static List<Article> getCachedArticles(JSONArray jsonArray) throws JSONException {
+    public static List<Article> jsonToArticleList(JSONArray jsonArray) throws JSONException {
         List <Article> articles = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonArticle = jsonArray.getJSONObject(i);
-            String title = jsonArticle.getString(Constants.ARTICLE_JSON_TITLE);
             String link = jsonArticle.getString(Constants.ARTICLE_JSON_LINK);
-            Article article = new Article(title, link);
-            articles.add(article);
+            if (indexOfJSONArray(jsonArray, link) < 0) {
+                String title = jsonArticle.getString(Constants.ARTICLE_JSON_TITLE);
+                Article article = new Article(title, link);
+                articles.add(article);
+            } else {
+                Log.d("hmm", "dont add");
+            }
         }
+        Log.d("articles", String.valueOf(articles.size()));
         return articles;
     }
 
@@ -80,6 +85,7 @@ public abstract class JsonCacheHelper {
 
     public static void appendToCachedArray(Context context, String element, String fileName, String key) {
         JSONArray jsonArray = getJsonArray(context, fileName, key);
+        Log.d("jsonArray != null", String.valueOf(jsonArray != null ? jsonArray.length() : 0));
         if (jsonArray != null && indexOfJSONArray(jsonArray, element) < 0) {
             jsonArray.put(element);
             JSONObject jsonObject = new JSONObject();
@@ -173,7 +179,6 @@ public abstract class JsonCacheHelper {
             responseText = client.newCall(requestText).execute();
             body = responseText.body().string();
             body = JsonCacheHelper.getTextFromBody(body);
-            Log.d("GET TEXT", fileName + body);
             JsonCacheHelper.cacheJson(context, body, fileName);
             return body;
         } catch (IOException e) {
