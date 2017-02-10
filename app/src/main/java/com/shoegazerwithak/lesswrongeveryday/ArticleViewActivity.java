@@ -81,13 +81,23 @@ public class ArticleViewActivity extends AppCompatActivity {
         };
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        setResultAndFinish(RESULT_CANCELED, false);
+    }
+
     class fabListenerClass implements OnClickListener {
         public void onClick(View v) {
             JsonCacheHelper.appendToCachedArray(v.getContext(), link);
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra("Filter", true);
-            setResult(RESULT_OK, resultIntent);
-            finish();
+            setResultAndFinish(RESULT_OK, true);
         }
+    }
+
+    private void setResultAndFinish(int resultCode, Boolean result) {
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("Filter", result);
+        setResult(resultCode, resultIntent);
+        finish();
     }
 }

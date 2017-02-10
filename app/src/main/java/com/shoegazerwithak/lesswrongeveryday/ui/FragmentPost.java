@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.shoegazerwithak.lesswrongeveryday.ArticleViewActivity;
 import com.shoegazerwithak.lesswrongeveryday.R;
 import com.shoegazerwithak.lesswrongeveryday.constants.Constants;
 import com.shoegazerwithak.lesswrongeveryday.model.Article;
@@ -83,9 +82,9 @@ public class FragmentPost extends Fragment {
     }
 
     public void cacheArticles() {
-        new AsyncTask<Void, Void, Void> () {
+        new AsyncTask<Void, Void, Void>() {
             @Override
-            protected Void doInBackground(Void ...params) {
+            protected Void doInBackground(Void... params) {
                 JSONArray articlesJson = JsonCacheHelper.getJsonArray(getContext());
                 if (articlesJson.length() == 0) {
                     for (Article article : mData) {
@@ -105,57 +104,23 @@ public class FragmentPost extends Fragment {
         mRecyclerViewPost.setAdapter(recyclerViewAdapter);
     }
 
-    public interface ArtistsFragmentInteractionListener {
-//        void onListItemClick(Article artistItem, View view);
-        void onListItemClick(Article artistItem);
-    }
-
-    /**
-     * Downloads JSON file from specified URL.
-     */
-    private class JsonDownloaderTask extends AsyncTask<String, Integer, List<Article>> {
-        @Override
-        protected List<Article> doInBackground(String... params) {
-            String json = JsonCacheHelper.getCachedJson(getContext(), Constants.CACHED_ARTICLES_LIST, true);
-            String link = params[0];
-            JSONArray jsonArray;
-            List<Article> articles = new ArrayList<>();
-            if (json != null && json.length() > 11) {
-                try {
-                    jsonArray = new JSONArray(json);
-                    return JsonCacheHelper.jsonToArticleList(jsonArray);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            return getArticles(articles, link);
-        }
-
-        @Override
-        protected void onPostExecute(List<Article> result) {
-            super.onPostExecute(result);
-            setupRecyclerView(result);
-            cacheArticles();
-        }
-    }
-
     public void doneCallback() {
         mData = filterReadArticles(mData);
         mRecyclerViewPost.setAdapter(new RecyclerViewAdapter(mData, mListener));
     }
 
-    public interface Callable<I, Boolean> {
-        Boolean call(I input);
-    }
-
     private List<Article> filter(List<Article> articles, Callable<Article, Boolean> predicate) {
         List<Article> res = new ArrayList<>();
-        for (Article article : articles) {
+        if (articles != null) {
+            for (Article article : articles) {
                 if (predicate.call(article)) {
                     res.add(article);
                 }
+            }
+            return res;
+        } else {
+            return res;
         }
-        return res;
     }
 
     private List<Article> filterReadArticles(List<Article> articles) {
@@ -204,6 +169,53 @@ public class FragmentPost extends Fragment {
             e1.printStackTrace();
         }
         return null;
+    }
+
+    public interface ArtistsFragmentInteractionListener {
+        //        void onListItemClick(Article artistItem, View view);
+        void onListItemClick(Article artistItem);
+
+        void onLoadingFail();
+
+        void onOfflineModeEnabled(boolean enabled, boolean performConnectivityCheck);
+    }
+
+    public interface Callable<I, Boolean> {
+        Boolean call(I input);
+    }
+
+    /**
+     * Downloads JSON file from specified URL.
+     */
+    private class JsonDownloaderTask extends AsyncTask<String, Integer, List<Article>> {
+        @Override
+        protected List<Article> doInBackground(String... params) {
+            String json = JsonCacheHelper.getCachedJson(getContext(), Constants.CACHED_ARTICLES_LIST, true);
+            String link = params[0];
+            JSONArray jsonArray;
+            List<Article> articles = new ArrayList<>();
+            if (json != null && json.length() > 11) {
+                try {
+                    jsonArray = new JSONArray(json);
+                    return JsonCacheHelper.jsonToArticleList(jsonArray);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            return getArticles(articles, link);
+        }
+
+        @Override
+        protected void onPostExecute(List<Article> articles) {
+            super.onPostExecute(articles);
+            if (articles != null) {
+                setupRecyclerView(articles);
+                cacheArticles();
+            } else {
+                // No connection, no cached data - show an error
+                if (mListener != null) mListener.onLoadingFail();
+            }
+        }
     }
 }
 

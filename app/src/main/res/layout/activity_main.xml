@@ -6,6 +6,8 @@
     android:orientation="vertical"
     tools:context="com.shoegazerwithak.lesswrongeveryday.MainActivity">
 
+    <include android:id="@+id/textview_offline_mode_main" layout="@layout/offline_banner"/>
+
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"

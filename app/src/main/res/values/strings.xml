@@ -3,4 +3,9 @@
     <string name="text_example">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vel vestibulum arcu. Fusce sed lacus eu ante mattis ultricies. Donec eget ullamcorper neque, vitae ultrices nisi. Vestibulum id dapibus sapien, vitae accumsan mi. Cras tincidunt finibus libero, sit amet dictum quam interdum non. Nunc pretium et libero sit amet volutpat. Aliquam nec tempor nisi. Donec tincidunt quam et elementum finibus. Vestibulum ut nisl molestie, volutpat ante non, hendrerit metus. Cras congue ac est nec pretium. Etiam nisi risus, tempus eu vulputate in, dictum vitae diam. Mauris varius finibus eros id imperdiet.
     </string>
+
+    <string name="offline_mode">Offline mode</string>
+    <string name="action_retry">Retry</string>
+    <string name="err_json_loading_failed">Couldn\'t load artists</string>
+    <string name="err_no_connection">Check your Internet connection</string>
 </resources>

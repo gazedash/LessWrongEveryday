@@ -3,4 +3,29 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="list_item_article_padding">8dp</dimen>
+
+    <dimen name="text_margin">16dp</dimen>
+
+    <dimen name="offline_mode_banner_height">32dp</dimen>
+    <dimen name="offline_mode_banner_text_size">10sp</dimen>
+
+    <!-- List -->
+    <dimen name="progressbar_size">48dp</dimen>
+
+    <dimen name="list_item_artist_height">128dp</dimen>
+    <dimen name="list_item_artist_padding">16dp</dimen>
+    <dimen name="list_item_artist_photo_size">96dp</dimen>
+
+    <!-- Artist details -->
+    <dimen name="artist_details_photo_height">300dp</dimen>
+    <dimen name="artist_details_text_margin_top_primary">16dp</dimen>
+    <dimen name="artist_details_text_margin_top_secondary">8dp</dimen>
+    <dimen name="fab_size">56dp</dimen>
+
+    <!--Error screen-->
+    <dimen name="retry_btn_width">128dp</dimen>
+    <dimen name="retry_btn_height">48dp</dimen>
+    <dimen name="error_image_height">280dp</dimen>
+    <dimen name="retry_btn_margin_bottom">48dp</dimen>
+    <dimen name="retry_btn_margin_top">48dp</dimen>
 </resources>
