@@ -1,35 +1,99 @@
 package com.shoegazerwithak.lesswrongeveryday;
 
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.preference.Preference;
+import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.shoegazerwithak.lesswrongeveryday.constants.Constants;
 import com.shoegazerwithak.lesswrongeveryday.model.Article;
+import com.shoegazerwithak.lesswrongeveryday.receivers.AlarmReceiver;
 import com.shoegazerwithak.lesswrongeveryday.ui.FragmentError;
 import com.shoegazerwithak.lesswrongeveryday.ui.FragmentPost;
 import com.shoegazerwithak.lesswrongeveryday.utils.ConnectivityBroadcastReceiver;
 
+import java.util.Calendar;
+
 public class MainActivity extends AppCompatActivity implements FragmentPost.ArtistsFragmentInteractionListener {
-    private FragmentManager mFragmentManager;
+    private android.app.FragmentManager mFragmentManager;
     private FragmentPost mFragmentPost;
+    private PlanetFragment mPlanetFragment;
     private TextView mOfflineModeBanner;
+
     private ConnectivityBroadcastReceiver mReceiver;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+
+    private ActionBarDrawerToggle mDrawerToggle;
+    private CharSequence mDrawerTitle;
+    private CharSequence mTitle;
+    private String[] mPlanetTitles;
+
+    protected OnBackPressedListener onBackPressedListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_drawer);
         mOfflineModeBanner = (TextView) findViewById(R.id.textview_offline_mode_main);
-        mFragmentManager = getSupportFragmentManager();
+        mFragmentManager = getFragmentManager();
         mFragmentPost = FragmentPost.newInstance();
+
+        mTitle = mDrawerTitle = getTitle();
+        mPlanetTitles = getResources().getStringArray(R.array.drawer_items);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+        // set a custom shadow that overlays the main content when the drawer opens
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.LEFT);
+        // set up the drawer's list view with items and click listener
+        mDrawerList.setAdapter(new ArrayAdapter<>(this,
+                R.layout.drawer_list_item, mPlanetTitles));
+        mDrawerList.setOnItemClickListener(new MainActivity.DrawerItemClickListener());
+
+        // ActionBarDrawerToggle ties together the the proper interactions
+        // between the sliding drawer and the action bar app icon
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,                  /* host Activity */
+                mDrawerLayout,         /* DrawerLayout object */
+                new Toolbar(MainActivity.this),  /* nav drawer image to replace 'Up' caret */
+                R.string.drawer_open,  /* "open drawer" description for accessibility */
+                R.string.drawer_close  /* "close drawer" description for accessibility */
+        ) {
+            public void onDrawerClosed(View view) {
+                getSupportActionBar().setTitle(mTitle);
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                getSupportActionBar().setTitle(mDrawerTitle);
+            }
+        };
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
+
         setFragment(mFragmentPost);
     }
 
@@ -52,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements FragmentPost.Arti
         unregisterReceiver(mReceiver);
     }
 
-    private void setFragment(Fragment fragment) {
+    private void setFragment(android.app.Fragment fragment) {
         mFragmentManager.beginTransaction().replace(R.id.container, fragment).commit();
     }
 
@@ -88,5 +152,176 @@ public class MainActivity extends AppCompatActivity implements FragmentPost.Arti
                 setFragment(mFragmentPost);
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // The action bar home/up action should open or close the drawer.
+        // ActionBarDrawerToggle will take care of this.
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        // Handle action buttons
+        return super.onOptionsItemSelected(item);
+    }
+
+    /* The click listner for ListView in the navigation drawer */
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            selectItem(position);
+        }
+    }
+
+    private void selectItem(int position) {
+        // update the main content by replacing fragments
+        mPlanetFragment = MainActivity.PlanetFragment.newInstance();
+        Bundle args = new Bundle();
+        args.putInt(MainActivity.PlanetFragment.ARG_PLANET_NUMBER, position);
+        mPlanetFragment.setArguments(args);
+        mFragmentManager.beginTransaction().replace(R.id.container, mPlanetFragment).addToBackStack(null).commit();
+        // update selected item and title, then close the drawer
+        mDrawerList.setItemChecked(position, true);
+        setTitle(mPlanetTitles[position]);
+        mDrawerLayout.closeDrawer(mDrawerList);
+    }
+
+    @Override
+    public void setTitle(CharSequence title) {
+        mTitle = title;
+        getSupportActionBar().setTitle(mTitle);
+    }
+
+    /**
+     * When using the ActionBarDrawerToggle, you must call it during
+     * onPostCreate() and onConfigurationChanged()...
+     */
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggles
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (onBackPressedListener != null)
+            onBackPressedListener.onBackPressed();
+        else
+            super.onBackPressed();
+    }
+
+    public interface OnBackPressedListener {
+        void onBackPressed();
+    }
+
+    public void setOnBackPressedListener(OnBackPressedListener onBackPressedListener) {
+        this.onBackPressedListener = onBackPressedListener;
+    }
+
+    public static class BaseBackPressedListener implements OnBackPressedListener {
+        private final Activity activity;
+
+        public BaseBackPressedListener(Activity activity) {
+            this.activity = activity;
+        }
+
+        @Override
+        public void onBackPressed() {
+            activity.getFragmentManager().popBackStackImmediate();
+            activity.setTitle(R.string.app_name);
+        }
+    }
+
+    /**
+     * Fragment that appears in the "content_frame", shows a planet
+     */
+    public static class PlanetFragment extends PreferenceFragment
+            implements SharedPreferences.OnSharedPreferenceChangeListener {
+        public static final String ARG_PLANET_NUMBER = "planet_number";
+
+        public PlanetFragment() {
+            // Empty constructor required for fragment subclasses
+        }
+
+        public static PlanetFragment newInstance() {
+            return new PlanetFragment();
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            Activity activity = getActivity();
+            View rootView = inflater.inflate(R.layout.fragment_planet, container, false);
+            ((MainActivity)activity).setOnBackPressedListener(new BaseBackPressedListener(activity));
+            int i = getArguments().getInt(ARG_PLANET_NUMBER);
+            String planet = getResources().getStringArray(R.array.drawer_items)[i];
+
+//            int imageId = getResources().getIdentifier(planet.toLowerCase(Locale.getDefault()),
+//                    "drawable", getActivity().getPackageName());
+
+            ListView lv = (ListView)rootView.findViewById(android.R.id.list);
+            // Change
+            getActivity().setTitle(planet);
+            return rootView;
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.fragment_planet);
+            getPreferenceScreen()
+                    .getSharedPreferences()
+                    .registerOnSharedPreferenceChangeListener(this);
+        }
+
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            getPreferenceScreen()
+                    .getSharedPreferences()
+                    .unregisterOnSharedPreferenceChangeListener(this);
+        }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            Log.d("tick", "1" + key);
+            if (key.equals("pref_sync")) {
+                Log.d("tick", "1" + String.valueOf(sharedPreferences.getBoolean(key, false)));
+                Preference pref = findPreference(key);
+                pref.setSummary(String.valueOf(sharedPreferences.getBoolean(key, false)));
+            } else {
+                Log.d("key", "1" + key);
+                Log.d("key", "1" + sharedPreferences.getAll());
+                //        if (sharedPreferences.getBoolean(key, false)) {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+//                if (!prefs.getBoolean("firstTime", false)) {
+                    Intent alarmIntent = new Intent(getActivity(), AlarmReceiver.class);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, alarmIntent, 0);
+
+                    AlarmManager manager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTimeInMillis(prefs.getLong(key, System.currentTimeMillis()));
+
+                    manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                            AlarmManager.INTERVAL_DAY, pendingIntent);
+
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putBoolean("firstTime", true);
+                    editor.apply();
+//                }
+//        }
+            }
+        }
     }
 }

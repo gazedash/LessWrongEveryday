@@ -6,8 +6,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -18,7 +16,7 @@ import com.shoegazerwithak.lesswrongeveryday.utils.JsonCacheHelper;
 
 import okhttp3.OkHttpClient;
 
-public class ArticleViewActivity extends AppCompatActivity {
+public class ArticleViewActivity extends Activity {
     OkHttpClient client = new OkHttpClient();
 
     TextView titleView;

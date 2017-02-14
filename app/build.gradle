@@ -1,6 +1,9 @@
 apply plugin: 'com.android.application'
 
 android {
+    lintOptions {
+        tasks.lint.enabled = false
+    }
     compileSdkVersion 25
     buildToolsVersion "25.0.0"
     defaultConfig {

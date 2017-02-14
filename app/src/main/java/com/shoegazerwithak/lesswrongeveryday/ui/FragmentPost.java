@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -85,10 +85,10 @@ public class FragmentPost extends Fragment {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                JSONArray articlesJson = JsonCacheHelper.getJsonArray(getContext());
+                JSONArray articlesJson = JsonCacheHelper.getJsonArray(getActivity());
                 if (articlesJson.length() == 0) {
                     for (Article article : mData) {
-                        JsonCacheHelper.getArticleTextAndCache(getContext(), client, article.link);
+                        JsonCacheHelper.getArticleTextAndCache(getActivity(), client, article.link);
                     }
                 }
                 return null;
@@ -100,7 +100,7 @@ public class FragmentPost extends Fragment {
         mData = filterReadArticles(data);
         Log.d("mData size", String.valueOf(mData.size()));
         recyclerViewAdapter = new RecyclerViewAdapter(mData, mListener);
-        mRecyclerViewPost.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerViewPost.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerViewPost.setAdapter(recyclerViewAdapter);
     }
 
@@ -127,7 +127,7 @@ public class FragmentPost extends Fragment {
         return filter(articles, new Callable<Article, Boolean>() {
             @Override
             public Boolean call(Article input) {
-                int res = JsonCacheHelper.indexOfJSONArray(JsonCacheHelper.getJsonArray(getContext()), input.link);
+                int res = JsonCacheHelper.indexOfJSONArray(JsonCacheHelper.getJsonArray(getActivity()), input.link);
                 return res < 0;
             }
         });
@@ -146,7 +146,7 @@ public class FragmentPost extends Fragment {
             Document doc = Jsoup.parse(body, Constants.API_ENDPOINT);
             Elements list = doc.select(Constants.LIST_SELECTOR);
             JSONArray articlesJSON = new JSONArray();
-            JSONArray readArticles = JsonCacheHelper.getJsonArray(getContext());
+            JSONArray readArticles = JsonCacheHelper.getJsonArray(getActivity());
             for (Element el : list) {
                 String articleLink = el.child(0).attr(Constants.HREF_SELECTOR);
                 if (JsonCacheHelper.indexOfJSONArray(readArticles, articleLink) < 0) {
@@ -163,7 +163,7 @@ public class FragmentPost extends Fragment {
                     articles.add(article);
                 }
             }
-            JsonCacheHelper.cacheJson(getContext(), articlesJSON.toString(), Constants.CACHED_ARTICLES_LIST);
+            JsonCacheHelper.cacheJson(getActivity(), articlesJSON.toString(), Constants.CACHED_ARTICLES_LIST);
             return articles;
         } catch (Exception e1) {
             e1.printStackTrace();
@@ -190,7 +190,7 @@ public class FragmentPost extends Fragment {
     private class JsonDownloaderTask extends AsyncTask<String, Integer, List<Article>> {
         @Override
         protected List<Article> doInBackground(String... params) {
-            String json = JsonCacheHelper.getCachedJson(getContext(), Constants.CACHED_ARTICLES_LIST, true);
+            String json = JsonCacheHelper.getCachedJson(getActivity(), Constants.CACHED_ARTICLES_LIST, true);
             String link = params[0];
             JSONArray jsonArray;
             List<Article> articles = new ArrayList<>();
