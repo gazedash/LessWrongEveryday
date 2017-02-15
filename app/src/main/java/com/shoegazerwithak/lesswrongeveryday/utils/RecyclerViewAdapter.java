@@ -19,6 +19,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     public RecyclerViewAdapter(List<Article> SubjectValues1, FragmentPost.ArtistsFragmentInteractionListener listener) {
         SubjectValues = SubjectValues1;
+        Log.d("recycleviewadapter", String.valueOf(listener != null));
         mListener = listener;
     }
 
@@ -52,9 +53,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         public void onClick(View view) {
 //            mListener.onListItemClick(SubjectValues.get(getAdapterPosition()), view);
             int index = getAdapterPosition();
+            int nextIndex = index + 1;
             Article clicked = SubjectValues.get(index);
-            Log.d("index", SubjectValues.get(index + 1).title);
-            mListener.onListItemClick(clicked, SubjectValues.get(index + 1).title);
+            String nextTitle = (SubjectValues.size() > nextIndex) ? SubjectValues.get(nextIndex).title : "nothing";
+            Log.d("clicked title", clicked.title);
+            Log.d("nextTitle", nextTitle);
+            Log.d("mListener", String.valueOf(mListener != null));
+            mListener.onListItemClick(clicked, nextTitle);
         }
     }
 }

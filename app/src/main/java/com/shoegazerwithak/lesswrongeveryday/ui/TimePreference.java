@@ -1,23 +1,15 @@
 package com.shoegazerwithak.lesswrongeveryday.ui;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.preference.DialogPreference;
-import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.TimePicker;
 
 import com.shoegazerwithak.lesswrongeveryday.R;
-import com.shoegazerwithak.lesswrongeveryday.receivers.AlarmReceiver;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 

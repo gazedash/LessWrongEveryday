@@ -1,10 +1,10 @@
 package com.shoegazerwithak.lesswrongeveryday.ui;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -51,10 +51,12 @@ public class FragmentPost extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d("oncReateView", "fdsfadsfa");
         View rootView = inflater.inflate(R.layout.fragment_post, container, false);
         mRecyclerViewPost = (RecyclerView) rootView.findViewById(R.id.recyclerview_post);
         // To avoid "No adapter attached; skipping layout"
         mData = new ArrayList<>();
+        Log.d("onCreateView", String.valueOf(mListener != null));
         mRecyclerViewPost.setAdapter(new RecyclerViewAdapter(mData, mListener));
         runJsonParsingTask(); // Download JSON, parse it and configure RecyclerView to show it
         return rootView;
@@ -63,6 +65,7 @@ public class FragmentPost extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        Log.d("onAttach", String.valueOf(context instanceof ArtistsFragmentInteractionListener));
         if (context instanceof ArtistsFragmentInteractionListener) {
             mListener = (ArtistsFragmentInteractionListener) context;
         } else {
@@ -73,6 +76,7 @@ public class FragmentPost extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        Log.d("onDeatch?", String.valueOf(mListener != null));
         mListener = null;
     }
 
@@ -99,6 +103,7 @@ public class FragmentPost extends Fragment {
     private void setupRecyclerView(List<Article> data) {
         mData = filterReadArticles(data);
         Log.d("mData size", String.valueOf(mData.size()));
+        Log.d("setupRecyclerView", String.valueOf(mListener != null));
         recyclerViewAdapter = new RecyclerViewAdapter(mData, mListener);
         mRecyclerViewPost.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerViewPost.setAdapter(recyclerViewAdapter);
@@ -174,7 +179,6 @@ public class FragmentPost extends Fragment {
 
     public interface ArtistsFragmentInteractionListener {
         void onListItemClick(Article artistItem, String nextTitle);
-
 //        void onListItemClick(Article artistItem);
 
         void onLoadingFail();

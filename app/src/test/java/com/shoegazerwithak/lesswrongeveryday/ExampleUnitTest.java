@@ -2,7 +2,7 @@ package com.shoegazerwithak.lesswrongeveryday;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Example local unit onDoneClick, which will execute on the development machine (host).

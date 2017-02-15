@@ -164,9 +164,6 @@ public class MainActivity extends AppCompatActivity implements FragmentPost.Arti
     private void selectItem(int position) {
         // update the main content by replacing fragments
         mPlanetFragment = com.shoegazerwithak.lesswrongeveryday.ui.PlanetFragment.newInstance();
-        Bundle args = new Bundle();
-        args.putInt(com.shoegazerwithak.lesswrongeveryday.ui.PlanetFragment.ARG_PLANET_NUMBER, position);
-        mPlanetFragment.setArguments(args);
         mFragmentManager.beginTransaction().replace(R.id.container, mPlanetFragment).addToBackStack(null).commit();
         // update selected item and title, then close the drawer
         mDrawerList.setItemChecked(position, true);
