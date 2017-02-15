@@ -25,6 +25,7 @@ public class ArticleViewActivity extends Activity {
     Article article;
     String link = "";
     String title = "";
+    String nextTitle = "";
 
     OnClickListener fabOnClickListener;
 
@@ -34,6 +35,7 @@ public class ArticleViewActivity extends Activity {
         setContentView(R.layout.activity_article_view);
         Bundle bundle = getIntent().getExtras();
         article = (Article) bundle.get(Constants.BUNDLE_ARTICLE_NAME);
+        nextTitle = bundle.getString(Constants.BUNDLE_NEXT_INDEX);
 
         if (article != null) {
             link = article.link;
@@ -88,6 +90,7 @@ public class ArticleViewActivity extends Activity {
     class fabListenerClass implements OnClickListener {
         public void onClick(View v) {
             JsonCacheHelper.appendToCachedArray(v.getContext(), link);
+            JsonCacheHelper.cacheJson(v.getContext(), nextTitle, Constants.NEXT_ARTICLE_FILENAME);
             setResultAndFinish(RESULT_OK, true);
         }
     }

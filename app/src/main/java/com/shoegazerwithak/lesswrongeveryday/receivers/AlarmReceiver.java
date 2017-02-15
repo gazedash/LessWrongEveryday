@@ -11,6 +11,14 @@ import android.widget.Toast;
 
 import com.shoegazerwithak.lesswrongeveryday.MainActivity;
 import com.shoegazerwithak.lesswrongeveryday.R;
+import com.shoegazerwithak.lesswrongeveryday.constants.Constants;
+import com.shoegazerwithak.lesswrongeveryday.utils.JsonCacheHelper;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Objects;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -28,9 +36,10 @@ public class AlarmReceiver extends BroadcastReceiver {
                         resultIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
+        String nextTitle = JsonCacheHelper.getCachedJson(context, Constants.NEXT_ARTICLE_FILENAME, false);
         Notification noti = new Notification.Builder(context)
                 .setContentTitle("Alarm Running")
-                .setContentText("test")
+                .setContentText("Read " + nextTitle + " next")
                 .setSmallIcon(R.drawable.ic_done)
                 .setContentIntent(resultPendingIntent)
                 .setAutoCancel(true)

@@ -134,12 +134,13 @@ public class FragmentPost extends Fragment {
     }
 
     @Nullable
-    private List<Article> getArticles(List<Article> articles, String link) {
+    private List<Article> getArticles(String link) {
         Request request = new Request.Builder()
                 // Possible NullPointerException...
                 .url(link)
                 .build();
         Response response;
+        List<Article> articles = new ArrayList<>();
         try {
             response = client.newCall(request).execute();
             String body = response.body().string();
@@ -172,8 +173,9 @@ public class FragmentPost extends Fragment {
     }
 
     public interface ArtistsFragmentInteractionListener {
-        //        void onListItemClick(Article artistItem, View view);
-        void onListItemClick(Article artistItem);
+        void onListItemClick(Article artistItem, String nextTitle);
+
+//        void onListItemClick(Article artistItem);
 
         void onLoadingFail();
 
@@ -193,7 +195,6 @@ public class FragmentPost extends Fragment {
             String json = JsonCacheHelper.getCachedJson(getActivity(), Constants.CACHED_ARTICLES_LIST, true);
             String link = params[0];
             JSONArray jsonArray;
-            List<Article> articles = new ArrayList<>();
             if (json != null && json.length() > 11) {
                 try {
                     jsonArray = new JSONArray(json);
@@ -202,7 +203,7 @@ public class FragmentPost extends Fragment {
                     e.printStackTrace();
                 }
             }
-            return getArticles(articles, link);
+            return getArticles(link);
         }
 
         @Override

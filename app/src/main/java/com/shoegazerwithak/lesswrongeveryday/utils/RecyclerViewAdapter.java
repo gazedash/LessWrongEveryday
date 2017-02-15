@@ -1,6 +1,7 @@
 package com.shoegazerwithak.lesswrongeveryday.utils;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +51,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         @Override
         public void onClick(View view) {
 //            mListener.onListItemClick(SubjectValues.get(getAdapterPosition()), view);
-            mListener.onListItemClick(SubjectValues.get(getAdapterPosition()));
+            int index = getAdapterPosition();
+            Article clicked = SubjectValues.get(index);
+            Log.d("index", SubjectValues.get(index + 1).title);
+            mListener.onListItemClick(clicked, SubjectValues.get(index + 1).title);
         }
     }
 }
