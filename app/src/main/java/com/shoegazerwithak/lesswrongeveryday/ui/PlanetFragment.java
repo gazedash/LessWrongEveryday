@@ -42,7 +42,7 @@ public class PlanetFragment extends PreferenceFragment
                              Bundle savedInstanceState) {
         Activity activity = getActivity();
         View rootView = inflater.inflate(R.layout.fragment_planet, container, false);
-        ((MainActivity) activity).setOnBackPressedListener(new MainActivity.BaseBackPressedListener(activity));
+        MainActivity.Companion.setOnBackPressedListener(((MainActivity) activity), new MainActivity.BaseBackPressedListener(activity));
         int i = getArguments().getInt(ARG_PLANET_NUMBER);
         String title = getResources().getStringArray(R.array.drawer_items)[i];
 //            int imageId = getResources().getIdentifier(title.toLowerCase(Locale.getDefault()),
