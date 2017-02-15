@@ -116,8 +116,8 @@ public class MainActivity extends AppCompatActivity implements FragmentPost.Arti
     }
 
     @Override
-//    public void onListItemClick(Article article, View view) {
     public void onListItemClick(Article article, String nextTitle) {
+//    public void onListItemClick(Article article) {
         Intent articleActivity = new Intent(this, ArticleViewActivity.class);
         articleActivity.putExtra(Constants.BUNDLE_ARTICLE_NAME, article);
         articleActivity.putExtra(Constants.BUNDLE_NEXT_INDEX, nextTitle);
@@ -163,7 +163,10 @@ public class MainActivity extends AppCompatActivity implements FragmentPost.Arti
 
     private void selectItem(int position) {
         // update the main content by replacing fragments
-        mPlanetFragment = com.shoegazerwithak.lesswrongeveryday.ui.PlanetFragment.newInstance();
+        mPlanetFragment = PlanetFragment.newInstance();
+        Bundle args = new Bundle();
+        args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
+        mPlanetFragment.setArguments(args);
         mFragmentManager.beginTransaction().replace(R.id.container, mPlanetFragment).addToBackStack(null).commit();
         // update selected item and title, then close the drawer
         mDrawerList.setItemChecked(position, true);

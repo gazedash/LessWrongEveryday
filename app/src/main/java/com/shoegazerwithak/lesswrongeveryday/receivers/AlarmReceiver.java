@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.shoegazerwithak.lesswrongeveryday.ArticleViewActivity;
 import com.shoegazerwithak.lesswrongeveryday.MainActivity;
 import com.shoegazerwithak.lesswrongeveryday.R;
 import com.shoegazerwithak.lesswrongeveryday.constants.Constants;
@@ -29,6 +30,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         Log.d("shss", "dfafasdf" + System.currentTimeMillis());
         Toast.makeText(context, "Alarm running", Toast.LENGTH_SHORT).show();
         Intent resultIntent = new Intent(context, MainActivity.class);
+        String nextTitle = JsonCacheHelper.getCachedJson(context, Constants.NEXT_ARTICLE_FILENAME, false);
         PendingIntent resultPendingIntent =
                 PendingIntent.getActivity(
                         context,
@@ -36,7 +38,6 @@ public class AlarmReceiver extends BroadcastReceiver {
                         resultIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT
                 );
-        String nextTitle = JsonCacheHelper.getCachedJson(context, Constants.NEXT_ARTICLE_FILENAME, false);
         Notification noti = new Notification.Builder(context)
                 .setContentTitle("Alarm Running")
                 .setContentText("Read " + nextTitle + " next")
@@ -45,8 +46,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setAutoCancel(true)
                 .build();
 
-        int mNotificationId = 001;
-        resultIntent.putExtra("notificationId", mNotificationId);
+        int mNotificationId = 1;
         // Gets an instance of the NotificationManager service
         NotificationManager mNotifyMgr =
                 (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);

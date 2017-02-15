@@ -1,5 +1,6 @@
 package com.shoegazerwithak.lesswrongeveryday.ui;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -63,13 +64,13 @@ public class FragmentPost extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        Log.d("onAttach", String.valueOf(context instanceof ArtistsFragmentInteractionListener));
-        if (context instanceof ArtistsFragmentInteractionListener) {
-            mListener = (ArtistsFragmentInteractionListener) context;
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        Log.d("onAttach", String.valueOf(activity instanceof ArtistsFragmentInteractionListener));
+        if (activity instanceof ArtistsFragmentInteractionListener) {
+            mListener = (ArtistsFragmentInteractionListener) activity;
         } else {
-            throw new RuntimeException(context.toString() + " must implement OnListFragmentInteractionListener");
+            throw new RuntimeException(activity.toString() + " must implement ArtistsFragmentInteractionListener");
         }
     }
 

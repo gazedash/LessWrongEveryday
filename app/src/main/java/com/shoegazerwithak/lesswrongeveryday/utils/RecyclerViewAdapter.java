@@ -51,7 +51,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         @Override
         public void onClick(View view) {
-//            mListener.onListItemClick(SubjectValues.get(getAdapterPosition()), view);
             int index = getAdapterPosition();
             int nextIndex = index + 1;
             Article clicked = SubjectValues.get(index);
@@ -60,6 +59,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             Log.d("nextTitle", nextTitle);
             Log.d("mListener", String.valueOf(mListener != null));
             mListener.onListItemClick(clicked, nextTitle);
+//            mListener.onListItemClick(clicked);
         }
     }
 }
