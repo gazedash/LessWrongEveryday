@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity(), FragmentPost.ArtistsFragmentInteractio
         super.onResume()
         mReceiver = ConnectivityBroadcastReceiver()
         registerReceiver(mReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
-        mReceiver!!.setConnectivityListener { available -> onOfflineModeEnabled(!available, false) }
+        mReceiver!!.setConnectivityListener { available -> onOfflineModeEnabled(available, false) }
     }
 
     override fun onPause() {
@@ -108,10 +108,10 @@ class MainActivity : AppCompatActivity(), FragmentPost.ArtistsFragmentInteractio
         }
     }
 
-    override fun onListItemClick(article: Article, nextTitle: String) {
+    override fun onListItemClick(artistItem: Article, nextTitle: String) {
         //    public void onListItemClick(Article article) {
         val articleActivity = Intent(this, ArticleViewActivity::class.java)
-        articleActivity.putExtra(Constants.BUNDLE_ARTICLE_NAME, article)
+        articleActivity.putExtra(Constants.BUNDLE_ARTICLE_NAME, artistItem)
         articleActivity.putExtra(Constants.BUNDLE_NEXT_INDEX, nextTitle)
         startActivityForResult(articleActivity, 1)
     }
@@ -161,11 +161,6 @@ class MainActivity : AppCompatActivity(), FragmentPost.ArtistsFragmentInteractio
         mTitle = title
         supportActionBar!!.title = mTitle
     }
-
-    /**
-     * When using the ActionBarDrawerToggle, you must call it during
-     * onPostCreate() and onConfigurationChanged()...
-     */
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
